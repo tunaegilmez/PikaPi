@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
+// const BASE_URL = "https://pokeapi.co/api/v2/pokemon";
+
+let offset = "0";
+let limit = "30";
 
 const state = {
   pokemons: [],
@@ -12,13 +15,41 @@ const mutations = {
   SET_POKES: (state, pokemons) => {
     state.pokemons = pokemons;
   },
+  ADD_POKES: (state, newPokes) => {
+    state.pokemons = [...state.pokemons, ...newPokes];
+  },
 };
 const actions = {
-  setAllPokes: ({ commit }) => {
-    axios.get(BASE_URL).then(res => {
-      console.log(res);
-      commit("SET_POKES", res.data.results);
-    });
+  fetchPokemons: ({ commit }) => {
+    axios
+      .get(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`)
+      .then(res => {
+        commit("SET_POKES", res.data.results);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
+  loadMore: ({ commit }) => {
+    axios
+      .get(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`)
+      .then(res => {
+        const nextOffset = res.data.next.split("=")[1];
+        axios
+          .get(
+            `https://pokeapi.co/api/v2/pokemon?offset=${nextOffset}=${limit}`
+          )
+          .then(res => {
+            const newPokes = res.data.results;
+            commit("ADD_POKES", newPokes);
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   },
 };
 
