@@ -8,6 +8,7 @@ const state = {
 };
 const getters = {
   getPokes: state => state.pokemons,
+  loadingStatus: state => state.loadingStatus,
 };
 const mutations = {
   SET_POKES: (state, pokemons) => {
