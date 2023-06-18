@@ -10,11 +10,6 @@
         </template>
       </Card>
     </div>
-    <div>
-      <button @click="loadMoreData()" class="bg-current p-3 rounded-xl">
-        <strong class="text-white"> Load More </strong>
-      </button>
-    </div>
   </div>
 </template>
 
@@ -30,20 +25,29 @@ export default {
   },
   methods: {
     ...mapActions("poke", ["fetchPokemons", "loadMore"]),
-    loadPokes() {
-      this.fetchPokemons();
-    },
+
     getPokeImage(url) {
       const pokeId = url.split("/").slice(-2, -1);
       return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokeId}.png`;
     },
 
-    loadMoreData() {
-      this.loadMore();
+    handleScroll() {
+      let sayfaYuksekligi = document.documentElement.scrollHeight;
+      let gorunenYukseklik = window.innerHeight;
+      let kaydirilanYukseklik = window.scrollY;
+
+      if (sayfaYuksekligi - (gorunenYukseklik + kaydirilanYukseklik) <= 0) {
+        this.loadMore();
+      }
     },
   },
   mounted() {
-    this.loadPokes();
+    this.fetchPokemons();
+
+    window.addEventListener("scroll", this.handleScroll);
+  },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.handleScroll);
   },
 };
 </script>

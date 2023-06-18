@@ -1,9 +1,7 @@
 import axios from "axios";
 
-// const BASE_URL = "https://pokeapi.co/api/v2/pokemon";
-
-let offset = "0";
-let limit = "30";
+let offset = 0;
+let limit = 30;
 
 const state = {
   pokemons: [],
@@ -32,20 +30,13 @@ const actions = {
   },
   loadMore: ({ commit }) => {
     axios
-      .get(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`)
+      .get(
+        `https://pokeapi.co/api/v2/pokemon?offset=${(offset +=
+          limit)}&limit=${limit}`
+      )
       .then(res => {
-        const nextOffset = res.data.next.split("=")[1];
-        axios
-          .get(
-            `https://pokeapi.co/api/v2/pokemon?offset=${nextOffset}=${limit}`
-          )
-          .then(res => {
-            const newPokes = res.data.results;
-            commit("ADD_POKES", newPokes);
-          })
-          .catch(err => {
-            console.log(err);
-          });
+        const newPokes = res.data.results;
+        commit("ADD_POKES", newPokes);
       })
       .catch(err => {
         console.log(err);
