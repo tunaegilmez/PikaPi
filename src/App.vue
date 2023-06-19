@@ -1,19 +1,20 @@
 <template>
   <div id="app" class="m-3">
     <Header />
-    <div class="w-90 mx-24 my-12">
-      <listPokeCard></listPokeCard>
+    <div class="mx-24 my-12">
+      <!-- <router-link to="/Detail">Detail</router-link> -->
+
+      <router-view />
     </div>
   </div>
 </template>
 
 <script>
 import Header from "./components/Header.vue";
-import listPokeCard from "./components/ListPokeCard.vue";
 
 export default {
   name: "App",
-  components: { Header, listPokeCard },
+  components: { Header },
 };
 </script>
 

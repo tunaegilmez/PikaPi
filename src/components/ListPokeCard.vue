@@ -3,16 +3,18 @@
     <Loading v-if="isLoading" />
     <div v-else class="grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 gap-8">
       <div v-for="(pokemon, i) in getPokes" :key="i">
-        <Card>
-          <template v-slot:imageSlot>
-            <div>
-              <img :src="getPokeImage(pokemon.url)" alt="PokeImg" />
-            </div>
-          </template>
-          <template v-slot:nameSlot>
-            <div>{{ pokemon.name }}</div>
-          </template>
-        </Card>
+        <div @click="goDetail(pokemon.url)" class="cursor-pointer">
+          <Card>
+            <template v-slot:imageSlot>
+              <div>
+                <img :src="getPokeImage(pokemon.url)" alt="PokeImg" />
+              </div>
+            </template>
+            <template v-slot:nameSlot>
+              <div>{{ pokemon.name }}</div>
+            </template>
+          </Card>
+        </div>
       </div>
     </div>
   </div>
@@ -58,7 +60,6 @@ export default {
 
     debounce(func, timeout = 300) {
       let timer;
-      console.log("TİMERRRR-----", timer);
       return (...args) => {
         clearTimeout(timer);
         timer = setTimeout(() => {
@@ -69,6 +70,11 @@ export default {
 
     processChance() {
       return this.debounce(this.handleScroll);
+    },
+
+    goDetail(url) {
+      const pokeId = url.split("/").slice(-2, -1);
+      this.$router.push(`/Detail/${pokeId}`);
     },
   },
   mounted() {
