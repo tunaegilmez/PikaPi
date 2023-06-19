@@ -1,11 +1,13 @@
 <template>
   <div>
     <Loading v-if="isLoading" />
-    <div v-else class="grid grid-cols-3 gap-8">
+    <div v-else class="grid md:grid-cols-2 sm:grid-cols-1 xl:grid-cols-3 gap-8">
       <div v-for="(pokemon, i) in getPokes" :key="i">
         <Card>
           <template v-slot:imageSlot>
-            <div><img :src="getPokeImage(pokemon.url)" alt="PokeImg" /></div>
+            <div>
+              <img :src="getPokeImage(pokemon.url)" alt="PokeImg" />
+            </div>
           </template>
           <template v-slot:nameSlot>
             <div>{{ pokemon.name }}</div>
@@ -39,17 +41,34 @@ export default {
 
     getPokeImage(url) {
       const pokeId = url.split("/").slice(-2, -1);
-      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokeId}.png`;
+      const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokeId}.png`;
+
+      return imgUrl;
     },
 
-    async handleScroll() {
-      let sayfaYuksekligi = document.documentElement.scrollHeight;
-      let gorunenYukseklik = window.innerHeight;
-      let kaydirilanYukseklik = window.scrollY;
+    handleScroll() {
+      let pageHeight = document.documentElement.scrollHeight;
+      let apparentHeight = window.innerHeight;
+      let scrolledHeight = window.scrollY;
 
-      if (sayfaYuksekligi - (gorunenYukseklik + kaydirilanYukseklik) <= 200) {
-        await this.loadMore();
+      if (pageHeight - (apparentHeight + scrolledHeight) <= 200) {
+        this.loadMore();
       }
+    },
+
+    debounce(func, timeout = 300) {
+      let timer;
+      console.log("TİMERRRR-----", timer);
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          func.apply(this, args);
+        }, timeout);
+      };
+    },
+
+    processChance() {
+      return this.debounce(this.handleScroll);
     },
   },
   mounted() {
@@ -60,10 +79,10 @@ export default {
       this.isLoading = false;
     }, 1000);
 
-    window.addEventListener("scroll", this.handleScroll);
+    window.addEventListener("scroll", this.processChance());
   },
   beforeDestroy() {
-    window.removeEventListener("scroll", this.handleScroll);
+    window.removeEventListener("scroll", this.processChance());
   },
 };
 </script>
